@@ -4,7 +4,7 @@ import argparse
 import requests
 
 # API information
-api_key = "a8f17a6c042ac852d0eb43031428a411" # OpenWeather API key
+api_key = "INSERT_HERE" # OpenWeather API key
 
 # Define a function to give the weather conditions
 def giveWeather(location):
