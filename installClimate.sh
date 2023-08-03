@@ -1,9 +1,7 @@
 #!/bin/bash
 
 APP_NAME="climate"
-
-# Add the path to the Go binary
-export PATH=$PATH:/usr/local/go/bin
+APP_FILE="climate.py" # Name of the Python file
 
 # Print the PATH variable for debugging
 echo "PATH: $PATH"
@@ -29,16 +27,12 @@ if [ "$confirm" != "y" ]; then
   exit 0
 fi
 
-# Compile the program
-echo "Compiling '$APP_NAME'..."
-go build -o $APP_NAME
+# Hash the script
+HASH=$(sha256sum "$APP_FILE" | awk '{ print $1 }')
 
-# Hash the binary
-HASH=$(sha256sum "$APP_NAME" | awk '{ print $1 }')
-
-# Move to /usr/local/bin
+# Copy to /usr/local/bin with the app name (without .py extension)
 echo "Installing '$APP_NAME' to /usr/local/bin..."
-mv $APP_NAME /usr/local/bin/
+cp $APP_FILE /usr/local/bin/$APP_NAME
 
 # Make it executable
 echo "Making '$APP_NAME' executable..."
@@ -59,7 +53,7 @@ CURRENT_HASH=\$(sha256sum "\$DESTINATION" | awk '{ print \$1 }')
 
 # Verify the hash
 if [ "\$INSTALLED_HASH" != "\$CURRENT_HASH" ]; then
-  echo "Hash mismatch. The file at \$DESTINATION may not be the correct taskit binary."
+  echo "Hash mismatch. The file at \$DESTINATION may not be the correct '$APP_NAME' binary."
   exit 1
 fi
 
@@ -79,3 +73,4 @@ EOL
 chmod +x uninstallClimate.sh
 
 echo "'$APP_NAME' installed successfully. You can now use it from anywhere! Run 'uninstallClimate.sh' to uninstall."
+
