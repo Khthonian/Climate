@@ -20,3 +20,6 @@ Once `installClimate.sh` has been run, `uninstallClimate.sh` will automatically 
 ```bash
 sudo bash uninstallClimate.sh
 ```
+
+## License
+This project is licensed under the [MIT License](LICENSE).
