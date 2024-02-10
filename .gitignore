@@ -1,1 +1,5 @@
+# Ignore uninstall script
 uninstallClimate.sh
+
+# Ignore env variable file
+.env
