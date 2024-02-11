@@ -1,14 +1,60 @@
 #!/usr/bin/env python3
 
 import argparse
+import json
 import os
+from datetime import datetime, timedelta
 
+import pycountry
 import requests
 from dotenv import load_dotenv
 
 # API information
 load_dotenv()
 api_key = os.getenv("api_key")  # OpenWeather API key
+
+
+# Define a function to convert the timezone response
+def formatTimezone(data):
+    timezoneOffset = data["timezone"]
+    timezoneOffsetHrs = timezoneOffset // 3600
+    timezoneOffsetMins = (timezoneOffset % 3600) // 60
+
+    if timezoneOffsetHrs >= 0:
+        return f"+{timezoneOffsetHrs:02d}:{timezoneOffsetMins:02d}"
+    else:
+        return f"+{timezoneOffsetHrs:03d}:{timezoneOffsetMins:02d}"
+
+
+# Define a function to convert the country code
+def formatCountry(data):
+    countryCode = data["sys"]["country"]
+
+    try:
+        return pycountry.countries.get(alpha_2=countryCode).name
+    except AttributeError:
+        return countryCode
+
+
+# Define a function to save the data characteristics
+def saveWeather(location, data):
+    # Format relevant variables to a readable format
+    weatherText = "Weather information for {}\n".format(location)
+    weatherText += "-----------------------------\n"
+    weatherText += f"Weather: {data['weather'][0]['description']}\n"
+    weatherText += f"Temperature: {data['main']['temp'] - 273.15:.1f}°C\n"
+    weatherText += f"Humidity: {data['main']['humidity']}%\n"
+    weatherText += f"Pressure: {data['main']['pressure']} hPa\n"
+    weatherText += f"Wind Speed: {data['wind']['speed']} m/s\n"
+    weatherText += f"Cloudiness: {data['clouds']['all']}%\n"
+    weatherText += f"Timezone: UTC{formatTimezone(data)}\n"
+    weatherText += f"Country: {formatCountry(data)}\n"
+    weatherText += "-----------------------------\n"
+
+    # Save the file
+    fileName = f"data/{location}_{data['id']}.txt"
+    with open(fileName, "a+") as file:
+        file.write(weatherText)
 
 
 # Define a function to give the weather conditions
@@ -29,6 +75,8 @@ def giveWeather(location):
 
         # Get temperature in celsius
         temperature = data["main"]["temp"] - 273.15
+
+        saveWeather(location, data)
 
         # Return string describing the weather
         return f"The weather in {location} is {weather} with a temperature of {temperature:.1f}°C."
