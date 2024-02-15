@@ -3,3 +3,6 @@ uninstallClimate.sh
 
 # Ignore env variable file
 .env
+
+# Ignore data directory
+data/
