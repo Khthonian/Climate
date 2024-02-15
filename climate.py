@@ -1,5 +1,5 @@
-import argparse
 import os
+import sys
 
 import pycountry
 import requests
@@ -8,6 +8,11 @@ from dotenv import load_dotenv
 # API information
 load_dotenv()
 api_key = os.getenv("api_key")  # OpenWeather API key
+
+
+# Define a function to concatenate the input args
+def concatenateArgs(delimiter, args):
+    return delimiter.join(args)
 
 
 # Define a function to convert the timezone response
@@ -84,21 +89,10 @@ def giveWeather(location):
         return "Error parsing weather data."
 
 
-def main():
-    parse = argparse.ArgumentParser(
-        description="Receive climate information for a location."
-    )
-    parse.add_argument(
-        "-w", "--weather", metavar="location", help="Get weather information."
-    )
+if len(sys.argv) < 2:
+    print("Usage: climate.py [location]")
+    exit(0)
 
-    args = parse.parse_args()
+input = concatenateArgs(" ", sys.argv[1:])
 
-    if args.weather:
-        print(giveWeather(args.weather))
-    else:
-        print("Please use either -w to get weather conditions or pollution.")
-
-
-if __name__ == "__main__":
-    main()
+print(giveWeather(input))
